@@ -10,6 +10,7 @@ public class PeregrineManager : MonoBehaviour
     [SerializeField] private bool useMockData = true;
     [SerializeField] private TextAsset mockJsonFile;
     [SerializeField] private float refreshRateSeconds = 28800f;
+    [SerializeField] private GameObject planePrefab;
     void Awake()
     {
         LoadSecrets();
@@ -61,8 +62,21 @@ public class PeregrineManager : MonoBehaviour
     }
     void ProcessFlightData(FlightResponse data)
     {
+        float radius = 50.5f;
         foreach (var flight in data.data)
         {
+            // Conversion of latitude and longitude to radians for potential use in positioning calculations
+            float lat = flight.live.latitude * Mathf.Deg2Rad;
+            float lon = flight.live.longitude * Mathf.Deg2Rad;
+            // Conversion of Spherical to cartesian coordinates
+            float x = radius * Mathf.Cos(lat) * Mathf.Cos(lon);
+            float y = radius * Mathf.Sin(lat);
+            float z = radius * Mathf.Cos(lat) * Mathf.Sin(lon);
+
+            Vector3 targetPosition = new Vector3(x, y, z);
+            // Instantiation of a plane prefab at the calculated position, facing the center of the globe
+            GameObject plane = Instantiate(planePrefab, targetPosition, Quaternion.identity);
+            plane.transform.LookAt(Vector3.zero);
             Debug.Log($"Processing Flight: {flight.airline.name}");
         }
     }
