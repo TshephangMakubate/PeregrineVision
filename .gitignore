@@ -67,6 +67,7 @@ Desktop.ini
 /Builds
 /Logs
 /MemoryCaptures
+/Recordings
 
 # Project-specific secrets
 secrets.json
